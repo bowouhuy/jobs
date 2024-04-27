@@ -62,6 +62,21 @@ class MitraController extends Controller
         }
     }
 
+    public function verifikasi(Request $request)
+    {
+        $user_id = $request->input('user_id');
+
+        $user = User::find($user_id);
+        $user->user_st = '1';
+        
+        if ($user->save()){
+            return redirect('admin/mitra');
+        }
+    }
+
+    public function sendOrder($id){
+        
+    }
     
 
     

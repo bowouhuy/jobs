@@ -224,8 +224,105 @@ class JasaController extends Controller
         $items['jasa'] = $jasa;
 
         return ArrayToXml::convert($items);
-
-       
     
+    }
+
+    public function listjson() {
+        $jasa = Jasa::all()->toArray();
+
+        return response()->json($jasa);
+    
+    }
+
+    public function listcsv() {
+        $jasa = Jasa::all()->toArray();
+
+        $filename = "jasa.csv";
+        $temp = fopen($filename, 'w');
+        fputcsv($temp, array('id', 'nama', 'subkategori_id', 'mitra_id', 'deskripsi', 'created_at', 'updated_at'));
+        foreach ($jasa as $key => $item) {
+            fputcsv($temp, $item);
+        }
+        fclose($temp);
+
+        return response()->download($filename);
+    
+    }
+
+    public function listpdf() {
+        $jasa = Jasa::all()->toArray();
+
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($this->convert_jasa_data_to_html());
+        return $pdf->stream();
+    
+    }
+
+    public function listjasaExpired(){
+        $jasa = Jasa::all();
+        $data = array();
+        foreach ($jasa as $key => $item) {
+            $jasa_image = Jasaimage::where('jasa_id', $item->id)->take(1)->first();
+            $data[$key] = $item;
+            if ($jasa_image){
+                $data[$key]['image'] = $jasa_image->url;
+            }
+        }
+        foreach ($jasa as $key => $item) {
+            $mitra = User::where('id', $item->mitra_id)->take(1)->first();
+            $data[$key] = $item;
+            if ($mitra){
+                $data[$key]['nama_mitra'] = $mitra->first_name.' '.$mitra->last_name;
+            }
+        }
+      
+        return DataTables::of($data)
+            ->addColumn('jasa_image', function($row){
+                if ($row->image){
+                    return '<img src="'.public_path('images/jasa_image/').$row->image.'" class="img-fluid">';
+                } else {
+                    return 'No Images';
+                }
+            })
+            ->addColumn('action', function($row){
+                return '
+                <a href="jasa/form_jasa/'.$row->id.'" class="btn btn-sm btn-warning"><b><i class="fa fa-pencil mr-1"></i>Edit</b></a>
+                <button onclick="delete_jasa('.$row->id.')" class="btn btn-sm btn-danger"><b><i class="fa fa-trash mr-1"></i>Delete</b></button>
+                ';
+            })
+            ->toJson();
+    }
+
+    public function convert_jasa_data_to_html(){
+        $jasa = Jasa::all()->toArray();
+        $output = '
+        <h3 align="center">Jasa</h3>
+        <table width="100%" style="border-collapse: collapse; border: 0px;">
+        <tr>
+            <th style="border: 1px solid; padding:12px;" width="10%">ID</th>
+            <th style="border: 1px solid; padding:12px;" width="20%">Nama</th>
+            <th style="border: 1px solid; padding:12px;" width="20%">Subkategori ID</th>
+            <th style="border: 1px solid; padding:12px;" width="20%">Mitra ID</th>
+            <th style="border: 1px solid; padding:12px;" width="20%">Deskripsi</th>
+            <th style="border: 1px solid; padding:12px;" width="20%">Created At</th>
+            <th style="border: 1px solid; padding:12px;" width="20%">Updated At</th>
+        </tr>
+        ';  
+        foreach($jasa as $jasa)
+        {
+            $output .= '
+            <tr>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["id"].'</td>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["nama"].'</td>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["subkategori_id"].'</td>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["mitra_id"].'</td>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["deskripsi"].'</td>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["created_at"].'</td>
+                <td style="border: 1px solid; padding:12px;">'.$jasa["updated_at"].'</td>
+            </tr>
+            ';
+        }
+        $output .= '</table>';
+        return $output;
     }
 }

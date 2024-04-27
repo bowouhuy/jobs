@@ -122,4 +122,14 @@ class TransaksiController extends Controller
 	{
 		return Excel::download(new TransaksiExport, 'transaksi.xlsx');
 	}
+
+    public function konfirmasiPesanan($id)
+    {
+        $data = array(
+            'title'=> 'Konfirmasi Transaksi',
+            'id' => $id
+        );
+
+        return view('admin.transaksi.konfirmasi', $data);
+    }
 }
