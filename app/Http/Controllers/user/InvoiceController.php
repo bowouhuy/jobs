@@ -12,6 +12,7 @@ use App\Models\Paket;
 use App\Models\Transaksi;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class InvoiceController extends Controller
 {
@@ -87,14 +88,14 @@ class InvoiceController extends Controller
     // }
 
     public function store(Request $request){
-        $image = $request->file('file');
+        // $image = $request->file('file');
         $paket_id = $request->input('paket_id');
-        $deskripsi = $request->input('deskripsi');
+        // $deskripsi = $request->input('deskripsi');
 
         
         /** Upload Images */
-        $filename = $image->getClientOriginalName();
-        $image->move(public_path('images/invoice'),$filename);
+        // $filename = $image->getClientOriginalName();
+        // $image->move(public_path('images/invoice'),$filename);
         
         $paket = Paket::find($paket_id);
         $jasa = Jasa::find($paket->jasa_id);
@@ -104,15 +105,23 @@ class InvoiceController extends Controller
             'jasa_id' => $jasa->id,
             'paket_id' => $paket_id,
             'amount' => $paket->harga+($paket->harga*0.10),
-            'deskripsi' => $deskripsi,
+            // 'deskripsi' => $deskripsi,
             'kode_invoice' => date('YmdHis'),
             'tanggal_invoice' => date('Y-m-d'),
             'tanggal_expired' => date('Y-m-d', strtotime('+'.$paket->estimasi.' days', strtotime(date('Y-m-d')))),
             'tanggal_transaksi' => date('Y-m-d'),
-            'bukti_transaksi' => $filename
+            'bukti_transaksi' => "test"
         ]);
         if ($transaksi->save()){
-            return response()->json(['success'=> 'Transaksi Created!']);
+            $data = array(
+                'user'=> Auth::user(),
+                'transaction' => $transaksi
+            );
+            $snap = $this->getSnapToken($data);
+            $url = "https://app.sandbox.midtrans.com/snap/v2/vtweb/".$snap;
+            // return Redirect::to($url);
+            return response()->json(['snap'=> $snap]);
+            // return response()->json(['transaction'=> $transaksi, 'user'=> Auth::user()]);
         }
     }
 
@@ -124,5 +133,50 @@ class InvoiceController extends Controller
                 File::delete(['upload/test.png', 'upload/test2.png']);
             */
         }
+    }
+
+    public function getSnapToken($data){
+
+        //SAMPLE REQUEST START HERE
+
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = 'SB-Mid-server-QjP-rzzNBfBl0vyfnenRBH9x';
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = false;
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
+
+        $params = array(
+            'transaction_details' => array(
+                'order_id' => rand(),
+                'gross_amount' => $data['transaction']->amount,
+            ),
+            'customer_details' => array(
+                'first_name' => $data['transaction']->first_name,
+                'last_name' => $data['transaction']->last_name,
+                'email' => $data['transaction']->email,
+                'phone' => $data['transaction']->no_hp
+            ),
+        );
+
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        return $snapToken;
+    }
+
+    public function paymentNotification(Request $request){
+        $order_id = $request->input('order_id');
+
+        $data = Invoice::where('order_id', $order_id)->first();
+
+        $data->transaksi_st = $request->input('transaction_status');
+        $data->transaksi_detail = $request->input();
+        $data->transaksi_tanggal = date("Y-m-d");
+
+        $data->save();
+
+        return response()->json(['message' => $order_id], 200);
+
     }
 }

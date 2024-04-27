@@ -1,5 +1,11 @@
 @extends('user.layouts.main')
 
+@section('custom-script')
+<script type="text/javascript"
+		src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key="{{env('MIDTRANS_CLIENT_KEY')}}"></script>
+@endsection
+
 @section('body')
 <div style="background: -webkit-gradient(linear, left top, right top, from(#7f59dc), to(#655be6)); background: linear-gradient(to right, #7f59dc, #655be6); height: 120px; width: 100%; ">
     <div class="container-fluid">
@@ -28,7 +34,7 @@
             <div class="col-12">
                 <div class="card m-b-20">
                     <div class="card-body">
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-12">
                                 <div class="invoice-title">
                                     <h4 class="pull-right font-16"><strong>Order # {{date('YmdHis')}}</strong></h4>
@@ -58,19 +64,6 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-6 m-t-30">
-                                        <address>
-                                            <strong>Payment Method:</strong>
-                                            <h6>Bank Utama:</h6>
-                                            BRI 7000-01-017411-53-0<br>
-                                            (Khaulah Aqilah Sanaba)<br>
-                                            <h6>Bank Lainnya:</h6>
-                                            Mandiri Syariah / BSI 7131183326<br>
-                                            (Khaulah Aqilah Sanaba)<br>
-                                            <br>Mandiri 1100011247928<br>
-                                            (Lara Arilisa Kinanti)<br>
-                                            <br>BNI 0803055094<br>
-                                            (Suci Fazriyah Nurrahmi)<br>
-                                        </address>
                                     </div>
                                     <div class="col-6 m-t-30 text-right">
                                         <address>
@@ -84,10 +77,21 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="row">
-                            <div class="col-12">
+                        <div class="col-6">
+                                <div class="panel panel-default">
+                                    <div class="p-2">
+                                        <h3 class="panel-title font-20"><strong>Customer Detail</strong></h3>
+                                        {{$customer->first_name}} {{$customer->last_name}}<br>
+                                        {{$customer->email}}<br>
+                                        {{$customer->no_hp}}
+                                    </div>
+                                    <div id="snap-container" style="width:100%"></div>
+                                </div>
+                            </div>
+                            <div class="col-6">
                                 <div class="panel panel-default">
                                     <div class="p-2">
                                         <h3 class="panel-title font-20"><strong>Order summary</strong></h3>
@@ -139,7 +143,16 @@
                                         <div class="d-print-none">
                                             <div class="pull-right">
                                                 <!-- <a href="javascript:window.print()" class="btn btn-success waves-effect waves-light"><i class="fa fa-print"></i></a> -->
-                                                <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#uploadModal">Konfirmasi Pembayaran</button>
+                                                <!-- <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#uploadModal">Konfirmasi Pembayaran</button> -->
+                                                <!-- <form action="{{url('invoice/store')}}" method="post" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <input name="paket_id" type="hidden" value="{{$paket->id}}">
+                                                    <button type="submit" class="btn btn-primary">Bayar</button>
+                                                </form> -->
+                                                <button id="pay-button" class="btn btn-primary waves-effect waves-light">Checkout</button>
+
+                                                <!-- @TODO: You can add the desired ID as a reference for the embedId parameter. -->
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -248,6 +261,30 @@ $(document).ready(function() {
 
     $('#btn-submit').on('click',function(){
         myDropzone.processQueue();
+    });
+
+    var payButton = document.getElementById('pay-button');
+    var snapToken = '';
+    payButton.addEventListener('click', function () {
+        $.ajax({
+                type: 'POST',
+                url: '{{ url("invoice/store")}}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    paket_id: '{{$paket->id}}',
+                },
+                success: function (data){
+                    // console.log(data.snap);
+                    snapToken = data.snap;
+                    console.log(snapToken);
+                    window.snap.embed(snapToken, {
+                        embedId: 'snap-container'
+                    });
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+        });
     });
         
 </script>

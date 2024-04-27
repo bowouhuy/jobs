@@ -48,11 +48,11 @@
                                         <th class="text-center">id</th>
                                         <th>Kode Invoice</th>
                                         <th class="text-center">Nama Jasa</th>
-                                        <th>Image</th>
+                                        <!-- <th>Image</th> -->
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Mitra</th>
                                         <th class="text-center">Status</th>
-                                        <th class="text-center">Bukti Bayar</th>
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -129,7 +129,6 @@
                 {data: 'id', name: 'id'},
                 {data: 'kode_invoice', name: 'kode_invoice'},
                 {data: 'jasa.nama', name: 'jasa.nama'},
-                {data: 'jasa_image', name: 'jasa_image'},
                 {data: 'tanggal_transaksi', name: 'tanggal_transaksi'},
                 {data: 'nama_mitra', name: 'nama_mitra'},
                 {data: 'status_transaksi', name: 'status_transaksi'},

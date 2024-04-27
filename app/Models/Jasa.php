@@ -35,4 +35,8 @@ class Jasa extends Model
     public function transaksi(){
         return $this->hasOne('App\Models\Transaksi', 'jasa_id');
     }
+
+    public function jasaimages(){
+        return $this->hasMany('App\Models\Jasaimage', 'jasa_id');
+    }
 }

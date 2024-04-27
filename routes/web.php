@@ -56,6 +56,7 @@ Route::prefix('/')->group(function () {
     Route::prefix('invoice')->group(function () {
         Route::post('store', [InvoiceController::class, 'store']);
         Route::get('delete_files/{filename}', [InvoiceController::class, 'delete_files']);
+        Route::get('get-snap-payment/{transaksi_id}', [InvoiceController::class, 'getSnapToken']);
     });
     Route::get('profile/list',[UserTransaksiController::class,'list']);
     Route::get('profile/order',[UserTransaksiController::class,'listorder']);
@@ -63,6 +64,15 @@ Route::prefix('/')->group(function () {
     // Route::prefix('faq')->group(function () {
     //     Route::get('1', function(){return view('user.faq.1');});
     // });
+
+    Route::prefix('transaksi')->group(function () {
+        Route::get('/', [UserTransaksiController::class, 'index']);
+        Route::get('list',[UserTransaksiController::class,'list']);
+        Route::post('store',[UserTransaksiController::class,'store']);
+        Route::get('form_order/{paket_id}', [UserTransaksiController::class, 'formCreate']);
+        Route::post('form_order/confirm', [UserTransaksiController::class, 'formConfirm']);
+        Route::post('snap-token', [UserTransaksiController::class, 'getSnapToken']);
+    });
 });
 
 /* ROUTE ADMIN */

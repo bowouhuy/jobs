@@ -87,7 +87,7 @@
                                         </p>
                                         <hr>
                                         <p class="card-text text-right">
-                                            <button class="btn btn-primary px-4">Pilih Paket</button>
+                                            <a href="{{url('transaksi/form_order',$data->id)}}" class="btn btn-primary px-4">Pilih Paket</a>
                                         </p>
                                     </div>
                                 </div>
@@ -118,7 +118,7 @@
                                                 </p>
                                                 <h6 class="text-secondary"><i class="fa fa-calendar"></i> Waktu pengerjaan {{$paket[$i]->estimasi}} hari</h6>
                                                 <hr>
-                                                <a href="{{url('jasa/invoice',$paket[$i]->id)}}" class="btn btn-primary btn-block">Pilih Paket</a>
+                                                <a href="{{url('transaksi/form_order',$data->id)}}" class="btn btn-primary btn-block">Pilih Paket</a>
                                             </div>
                                             @endfor
                                         </div>

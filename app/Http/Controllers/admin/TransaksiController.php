@@ -48,7 +48,7 @@ class TransaksiController extends Controller
             }
         }
         $data2 = json_encode($data);
-        dd($data2);
+        // dd($data2);
         // dd($data);
         return DataTables::of($data)
             ->addColumn('jasa_image', function($row){
