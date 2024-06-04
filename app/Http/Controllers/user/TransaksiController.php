@@ -16,6 +16,7 @@ use App\Models\Jasaimage;
 use App\Models\User;
 use App\Models\Orderfile;
 use App\Models\Kategori;
+use App\Models\Order;
 
 class TransaksiController extends Controller
 {
@@ -88,7 +89,7 @@ class TransaksiController extends Controller
         //             ->join('jasa','transaksi.jasa_id','=','jasa.id')
         //             ->select('transaksi.*','jasa.nama AS nama_jasa','jasa.mitra_id')
         //             ->get();
-        $transaksi = Transaksi::with('jasa')->where('customer_id', '=', Auth::user()->id)->get();
+        $transaksi = Transaksi::with('jasa', 'mitra')->where('customer_id', '=', Auth::user()->id)->get();
         $data = array();
         foreach ($transaksi as $key => $item) {
             $jasa_image = Jasaimage::where('jasa_id', $item->jasa_id)->take(1)->first();
@@ -128,8 +129,6 @@ class TransaksiController extends Controller
                 </form>
                 </b></a>
                 
-
-                
                 ';
             })
             ->rawColumns(['jasa_image', 'status_transaksi', 'action'])
@@ -152,11 +151,13 @@ class TransaksiController extends Controller
 
     public function formCreate($paket_id)
     {
-        $jasa = Paket::with('jasa.jasaimages')->where('id', $paket_id)->first();
+        $paket = Paket::with('jasa.jasaimages')->where('id', $paket_id)->first();
+
         $data = array(
             'title' => 'Form Order',
             'menu' => $this->menu,
-            'jasa' => $jasa
+            'jasa' => $paket->jasa,
+            'paket' => $paket,
         );
 
         return view('user.transaksi.create', $data);
@@ -176,6 +177,27 @@ class TransaksiController extends Controller
             'paket' => $paket,
         );
         return view('user.invoice.index', $data);
+    }
+
+    public function payment(Request $request){
+        $id = $request->order_id;
+        $order = Order::with('transaksi')->find($id);
+        $jasa = Jasa::find($order->jasa_id);
+        $customer = User::where('id', $order->customer_id)->take(1)->first();
+        $mitra = User::where('id', $order->mitra_id)->take(1)->first();
+        $paket = Paket::find($order->paket_id);
+
+        $data = array(
+            'title' => 'Payment',
+            'menu' => $this->menu,
+            'jasa' => $jasa,
+            'customer' => $customer,
+            'mitra' => $mitra,
+            'paket' => $paket,
+            'order' => $order,
+        );
+
+        return view('user.invoice.payment', $data);
     }
     
 

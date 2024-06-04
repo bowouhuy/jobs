@@ -152,18 +152,6 @@
                                     <small class="text-muted my-0">Total {{$data->total}} jasa digunakan</small>
                                     </span>
                                 </div>
-                                @if ($data->image)
-                                <img class="card-img-top img-fluid" style="height: 200px;" src="{{asset('images/jasa_image/'.$data->image)}}" alt="Card image cap">
-                                @else
-                                <img class="card-img-top img-fluid" height="200px" src="user_template/assets/images/small/img-4.jpg" alt="Card image cap">
-                                @endif
-                                <div class="card-body">
-                                    <h6 class="card-title font-10 mt-0">{{$data->nama}} </h6>
-                                    <!-- <p class="card-text">{!! Str::limit($data->deskripsi), 50, $end='...' !!}</p> -->
-                                    <p class="card-text">
-                                        <small class="text-muted">Last updated {{$data->created_at}}</small>
-                                    </p>
-                                </div>
                             </a>
                         </div>
                     </div>

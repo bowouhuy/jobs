@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="col-auto">
                                     <button type="submit" class="btn btn-primary px-3"><i class="fa fa-search"></i></button>
-                                    <a href="{{url('jasa/'.$subkategori_id)}}" class="btn btn-secondary px-3 ml-1"><i class="fa fa-refresh"></i></a>
+                                    <a href="{{url('jasa')}}" class="btn btn-secondary px-3 ml-1"><i class="fa fa-refresh"></i></a>
                                 </div>
                             </div>
                         </form>

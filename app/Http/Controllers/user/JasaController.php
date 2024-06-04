@@ -26,12 +26,12 @@ class JasaController extends Controller
         }
     }
 
-    public function index($subkategori_id,Request $request) {
-        $jasa = Jasa::when($subkategori_id,function($query,$subkategori_id) {
-                return $query->where('subkategori_id', $subkategori_id);
-                })->when($request, function($query, $request){
-                return $query->where('nama','LIKE','%'.$request->input('search').'%');
-                })->get();
+    public function index(Request $request, $subkategori_id = null) {
+        $jasa = Jasa::where('nama','LIKE','%'.$request->input('search').'%');
+        if ($subkategori_id !== null) {
+            $jasa->where('subkategori_id', $subkategori_id);
+        }
+            $jasa = $jasa->get();
         $res = array();
         foreach ($jasa as $key => $item) {
             $jasa_image = Jasaimage::where('jasa_id', $item->id)->take(1)->first();
@@ -44,16 +44,15 @@ class JasaController extends Controller
         $data = array(
             'title'=> 'List Jasa',
             'menu' => $this->menu,
-            'jasa' => $res,
-            'subkategori_id' => $subkategori_id
+            'jasa' => $res
         );
         return view('user.jasa.index', $data);
     }
 
     public function show($jasa_id) {
         $jasa = Jasa::find($jasa_id);
-        $carousel_images = Jasaimage::where('jasa_id', $jasa_id)->skip(0)->take(4)->get();
-        $more_images = Jasaimage::where('jasa_id', $jasa_id)->skip(4)->take(6)->get();
+        $carousel_images = Jasaimage::where('jasa_id', $jasa_id)->get();
+        $more_images = Jasaimage::where('jasa_id', $jasa_id)->get();
         $paket = Paket::where('jasa_id', $jasa_id)->get();
 
         $data = array(

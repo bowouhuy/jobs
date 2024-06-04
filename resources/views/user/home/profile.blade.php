@@ -40,29 +40,29 @@
             <div class="col-xl-9 col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="mt-0 header-title">Transaksi</h4>
-                        <div class="table-responsive mt-4">
-                            <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">id</th>
-                                        <th>Kode Invoice</th>
-                                        <th class="text-center">Nama Jasa</th>
-                                        <!-- <th>Image</th> -->
-                                        <th class="text-center">Tanggal</th>
-                                        <th class="text-center">Mitra</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Datatable -->
-                                </tbody>
-                            </table>
-                        </div>
+{{--                        <h4 class="mt-0 header-title">Transaksi</h4>--}}
+{{--                        <div class="table-responsive mt-4">--}}
+{{--                            <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">--}}
+{{--                                <thead>--}}
+{{--                                    <tr>--}}
+{{--                                        <th class="text-center">id</th>--}}
+{{--                                        <th>Kode Invoice</th>--}}
+{{--                                        <th class="text-center">Nama Jasa</th>--}}
+{{--                                        <!-- <th>Image</th> -->--}}
+{{--                                        <th class="text-center">Tanggal</th>--}}
+{{--                                        <th class="text-center">Mitra</th>--}}
+{{--                                        <th class="text-center">Status</th>--}}
+{{--                                        <th class="text-center">Action</th>--}}
+{{--                                    </tr>--}}
+{{--                                </thead>--}}
+{{--                                <tbody>--}}
+{{--                                    <!-- Datatable -->--}}
+{{--                                </tbody>--}}
+{{--                            </table>--}}
+{{--                        </div>--}}
                         <h4 class="mt-3 header-title">Order</h4>
                         <div class="table-responsive mt-4">
-                            <table id="datatable2" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <table id="datatable2" class="table dt-responsive nowrap" style=" border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
                                     <th class="text-center">id</th>
@@ -70,11 +70,23 @@
                                     <th class="text-center">Nama Mitra</th>
                                     <th class="text-center">Tanggal</th>
                                     <th class="text-center">Status Transaksi</th>
+                                    <th class="text-center">Status Order</th>
                                     <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Datatable -->
+                                    @foreach($orders as $order)
+                                    <tr>
+                                        <td class="text-center">{{$order->id}}</td>
+                                        <td class="text-center">{{$order->jasa->nama}}</td>
+                                        <td class="text-center">{{$order->mitra->first_name}} {{$order->mitra->last_name}}</td>
+                                        <td class="text-center">{{$order->created_at}}</td>
+                                        <td class="text-center">{{$order->transaksi->status}}</td>
+                                        <td class="text-center">{{$order->status}}</td>
+                                        <td class="text-center">
+                                            <button class="btn btn-primary" onclick="confirm_transaksi('{{$order->image_url}}', {{$order->id}})">Confirm</button>
+                                        </td>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -119,38 +131,38 @@
 <script src="{{ asset('user_template/assets/pages/sweet-alert.init.js')}} "></script>
 <script>
     $(document).ready(function() {
-        var dataTable = $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            autoWidth: false,
-            ajax: "{{ url('profile/list') }}",
-            "order": [[ 0, "desc" ]],
-            columns: [
-                {data: 'id', name: 'id'},
-                {data: 'kode_invoice', name: 'kode_invoice'},
-                {data: 'jasa.nama', name: 'jasa.nama'},
-                {data: 'tanggal_transaksi', name: 'tanggal_transaksi'},
-                {data: 'nama_mitra', name: 'nama_mitra'},
-                {data: 'status_transaksi', name: 'status_transaksi'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
-            ]
-        });
+        {{--var dataTable = $('#datatable').DataTable({--}}
+        {{--    processing: true,--}}
+        {{--    serverSide: true,--}}
+        {{--    autoWidth: false,--}}
+        {{--    ajax: "{{ url('profile/list') }}",--}}
+        {{--    "order": [[ 0, "desc" ]],--}}
+        {{--    columns: [--}}
+        {{--        {data: 'id', name: 'id'},--}}
+        {{--        {data: 'kode_invoice', name: 'kode_invoice'},--}}
+        {{--        {data: 'jasa.nama', name: 'jasa.nama'},--}}
+        {{--        {data: 'tanggal_transaksi', name: 'tanggal_transaksi'},--}}
+        {{--        {data: 'nama_mitra', name: 'nama_mitra'},--}}
+        {{--        {data: 'status_transaksi', name: 'status_transaksi'},--}}
+        {{--        {data: 'action', name: 'action', orderable: false, searchable: false},--}}
+        {{--    ]--}}
+        {{--});--}}
 
-        var dataTable = $('#datatable2').DataTable({
-            processing: true,
-            serverSide: true,
-            autoWidth: false,
-            ajax: "{{ url('profile/order') }}",
-            "order": [[ 0, "desc" ]],
-            columns: [
-                {data: 'id', name: 'id'},
-                {data: 'jasa.nama', name: 'jasa.nama'},
-                {data: 'nama_customer', name: 'nama_customer'},
-                {data: 'tanggal_transaksi', name: 'tanggal_transaksi'},
-                {data: 'status_transaksi', name: 'status_transaksi'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
-            ]
-        });
+        {{--var dataTable = $('#datatable2').DataTable({--}}
+        {{--    processing: true,--}}
+        {{--    serverSide: true,--}}
+        {{--    autoWidth: false,--}}
+        {{--    ajax: "{{ url('profile/order') }}",--}}
+        {{--    "order": [[ 0, "desc" ]],--}}
+        {{--    columns: [--}}
+        {{--        {data: 'id', name: 'id'},--}}
+        {{--        {data: 'jasa.nama', name: 'jasa.nama'},--}}
+        {{--        {data: 'mitra.first_name', name: 'mitra'},--}}
+        {{--        {data: 'tanggal_transaksi', name: 'tanggal_transaksi'},--}}
+        {{--        {data: 'status_transaksi', name: 'status_transaksi'},--}}
+        {{--        {data: 'action', name: 'action', orderable: false, searchable: false},--}}
+        {{--    ]--}}
+        {{--});--}}
     });
 
     function confirm_transaksi(image_url, id_transaksi){

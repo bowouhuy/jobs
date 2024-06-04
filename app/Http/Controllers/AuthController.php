@@ -171,7 +171,7 @@ class AuthController extends Controller
                 return redirect('/mitra');
 
             }else if(Auth::user()->role ===0){
-
+dd('admin');
                 return redirect('/admin');
 
             }

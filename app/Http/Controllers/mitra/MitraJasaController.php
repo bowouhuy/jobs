@@ -119,7 +119,7 @@ class MitraJasaController extends Controller
         $jasa_id = $request->input('jasa_id');
         /** Upload Images */
         $image = $request->file('file');
-        $filename = $image->getClientOriginalName();
+        $filename = time() . '.' . $image->getClientOriginalExtension();
         $image->move(public_path('images/jasa_image'),$filename);
     
         /** Insert Jasa Images */

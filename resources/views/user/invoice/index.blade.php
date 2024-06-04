@@ -144,12 +144,11 @@
                                             <div class="pull-right">
                                                 <!-- <a href="javascript:window.print()" class="btn btn-success waves-effect waves-light"><i class="fa fa-print"></i></a> -->
                                                 <!-- <button class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target="#uploadModal">Konfirmasi Pembayaran</button> -->
-                                                <!-- <form action="{{url('invoice/store')}}" method="post" enctype="multipart/form-data">
+                                                 <form action="{{url('invoice/store')}}" method="post" enctype="multipart/form-data">
                                                     @csrf
                                                     <input name="paket_id" type="hidden" value="{{$paket->id}}">
-                                                    <button type="submit" class="btn btn-primary">Bayar</button>
-                                                </form> -->
-                                                <button id="pay-button" class="btn btn-primary waves-effect waves-light">Checkout</button>
+                                                <button type="submit" class="btn btn-primary waves-effect waves-light">Choose Payment</button>
+                                                </form>
 
                                                 <!-- @TODO: You can add the desired ID as a reference for the embedId parameter. -->
                                                 
@@ -285,6 +284,8 @@ $(document).ready(function() {
                     console.log(e);
                 }
         });
+        // disable pay button
+        payButton.disabled = true;
     });
         
 </script>

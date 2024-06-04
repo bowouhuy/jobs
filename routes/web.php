@@ -9,6 +9,7 @@ use App\Http\Controllers\user\HomeController;
 use App\Http\Controllers\user\JasaController;
 use App\Http\Controllers\user\InvoiceController;
 use App\Http\Controllers\user\TransaksiController as UserTransaksiController;
+use App\Http\Controllers\user\OrderController;
 /* ADMIN */
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\JasaController as AdminJasaController;
@@ -71,7 +72,13 @@ Route::prefix('/')->group(function () {
         Route::post('store',[UserTransaksiController::class,'store']);
         Route::get('form_order/{paket_id}', [UserTransaksiController::class, 'formCreate']);
         Route::post('form_order/confirm', [UserTransaksiController::class, 'formConfirm']);
+        Route::get('payment', [UserTransaksiController::class, 'payment'])->name('user.transaksi.payment');
         Route::post('snap-token', [UserTransaksiController::class, 'getSnapToken']);
+    });
+
+    Route::prefix('order')->group(function () {
+        Route::get('/', [OrderController::class, 'index']);
+        Route::post('store', [OrderController::class, 'store']);
     });
 });
 

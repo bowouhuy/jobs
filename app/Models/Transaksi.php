@@ -23,9 +23,14 @@ class Transaksi extends Model
         'tanggal_transaksi',
         'bukti_transaksi',
         'status',
+        'snap_code',
     ];
 
     public function jasa(){
         return $this->belongsTo('App\Models\Jasa', 'jasa_id', 'id');
+    }
+
+    public function mitra(){
+        return $this->belongsTo('App\Models\User', 'mitra_id', 'id');
     }
 }

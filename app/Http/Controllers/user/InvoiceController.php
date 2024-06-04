@@ -118,10 +118,12 @@ class InvoiceController extends Controller
                 'transaction' => $transaksi
             );
             $snap = $this->getSnapToken($data);
+            $transaksi->snap_code = $snap;
+            $transaksi->save();
             $url = "https://app.sandbox.midtrans.com/snap/v2/vtweb/".$snap;
             // return Redirect::to($url);
-            return response()->json(['snap'=> $snap]);
-            // return response()->json(['transaction'=> $transaksi, 'user'=> Auth::user()]);
+//            return response()->json(['snap'=> $snap]);
+            return Redirect::route('payment', ['transaksi_id' => $transaksi->id]);
         }
     }
 
