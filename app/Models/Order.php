@@ -50,4 +50,9 @@ class Order extends Model
     {
         return $this->belongsTo(Jasa::class);
     }
+
+    public function histories()
+    {
+        return $this->hasMany(OrderHistory::class);
+    }
 }

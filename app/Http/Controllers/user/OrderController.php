@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\user;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kategori;
 use App\Models\TransactionHistory;
 use Illuminate\Http\Request;
 use App\Models\Order;
@@ -10,9 +11,22 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Paket;
 use App\Models\Transaksi;
 use App\Models\OrderHistory;
+use App\Traits\HelperTrait;
 
 class OrderController extends Controller
 {
+    use HelperTrait;
+    public function __construct() {
+        $kategori = Kategori::all();
+        $this->menu = array();
+        foreach ($kategori as $key => $data) {
+            $subkategori = Kategori::find($data->id)->subkategori;
+            $this->menu[$key] = $data;
+            if ($subkategori){
+                $this->menu[$key]['subkategori'] = $subkategori;
+            }
+        }
+    }
     public function createTransaction($data){
 
         //SAMPLE REQUEST START HERE
@@ -28,7 +42,7 @@ class OrderController extends Controller
 
         $params = array(
             'transaction_details' => array(
-                'order_id' => $data['invoice_id'],
+                'order_id' => $data['order']->order_id,
                 'gross_amount' => $data['amount']
             ),
             'customer_details' => array(
@@ -99,5 +113,19 @@ class OrderController extends Controller
         }
 
         return redirect()->route('user.transaksi.payment', ['order_id' => $order->id]);
+    }
+
+    public function detail($id)
+    {
+        $order = Order::with('paket.jasa.mitra')->find($id);
+        $mergeHistory = self::orderHistory($id);
+        $data = array(
+            'title' => 'Order Detail',
+            'menu' => $this->menu,
+            'order' => $order,
+            'mergeHistory' => $mergeHistory
+        );
+
+        return view('user.order.detail', $data);
     }
 }

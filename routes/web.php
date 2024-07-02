@@ -79,6 +79,7 @@ Route::prefix('/')->group(function () {
     Route::prefix('order')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::post('store', [OrderController::class, 'store']);
+        Route::get('detail/{id}', [OrderController::class, 'detail']);
     });
 });
 
@@ -160,8 +161,10 @@ Route::prefix('mitra')->middleware('auth.mitra')->group(function () {
     Route::prefix('order')->group(function () {
         Route::get('/', [MitraOrderController::class, 'index']);
         Route::get('list',[MitraOrderController::class,'list']);
+        Route::get('detail/{id}', [MitraOrderController::class, 'detail']);
         Route::post('form_order_store', [MitraOrderController::class, 'form_order_store']);
         Route::get('delete_files/{filename}', [MitraOrderController::class, 'delete_files']);
+        Route::post('kerjakan', [MitraOrderController::class, 'kerjakan']);
     });
 });
 /* ROUTE AUTH */

@@ -90,6 +90,7 @@
 <script src="{{asset('admin_template/assets/plugins/datatables/dataTables.bootstrap4.min.js')}}"></script>
 <script src="{{ asset('user_template/assets/plugins/sweet-alert2/sweetalert2.min.js')}} "></script>
 <script src="{{ asset('user_template/assets/pages/sweet-alert.init.js')}} "></script>
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script>
     $(document).ready(function() {
         var dataTable = $('#datatable').DataTable({
@@ -101,64 +102,82 @@
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'jasa.nama', name: 'jasa.nama'},
-                {data: 'nama_customer', name: 'nama_customer'},
-                {data: 'tanggal_transaksi', name: 'tanggal_transaksi'},
-                {data: 'status_transaksi', name: 'status_transaksi'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
+                {
+                    data: null,
+                    render: function(data){
+                        return data.customer.first_name + ' ' + data.customer.last_name;
+                    }
+                },
+                {
+                    data: null,
+                    render: function(data){
+                        return moment(data.created_at).format('DD-MM-YYYY');
+                    }
+
+                },
+                {data: 'transaksi.status', name: 'status_transaksi'},
+                //detail
+                {
+                    data: null,
+                    render : function(data){
+                        return '<a href="/mitra/order/detail/'+data.id+'" class="btn btn-primary btn-sm">Detail</a>';
+                    }
+
+                },
             ]
         });
     });
     
-    Dropzone.autoDiscover = false;
+    // Dropzone.autoDiscover = false;
 
-    var myDropzone = new Dropzone(".dropzone", { 
-        maxFilesize: 12,
-        uploadMultiple: false, 
-        maxFiles: 1,
-        // renameFile: function(file) {
-        //     var dt = new Date();
-        //     var time = dt.getTime();
-        //     return time+file.name;
-        // },
-        parallelUploads: 1,
-        acceptedFiles: ".jpeg,.jpg,.png,.gif",
-        addRemoveLinks: true,
-        autoProcessQueue: false,
-        timeout: 50000,
-        removedfile: function(file) 
-        {
-            var name = file.name;
-            $.ajax({
-                type: 'GET',
-                url: '{{ url("mitra/order/delete_files")}}' + '/' + name,
-                success: function (data){
-                    console.log("File has been successfully removed!!");
-                },
-                error: function(e) {
-                    console.log(e);
-                }});
-                var fileRef;
-                return (fileRef = file.previewElement) != null ? 
-                fileRef.parentNode.removeChild(file.previewElement) : void 0;
-        },
-        success: function(file, response) 
-        {
-            swal({
-                title: 'Success!',
-                text: 'Konfirmasi Pembayaran Berhasil!',
-                type: 'success',
-                showConfirmButton: false
-            }).then(
-                setTimeout(function () {
-                    window.location.replace("{{ url('/mitra/order/')}}")
-                }, 2000)
-            )
-        },
-        error: function(file, response)
-        {
-            return false;
-        }
-    });
+    // var myDropzone = new Dropzone(".dropzone", { 
+    //     maxFilesize: 12,
+    //     uploadMultiple: false, 
+    //     maxFiles: 1,
+    //     // renameFile: function(file) {
+    //     //     var dt = new Date();
+    //     //     var time = dt.getTime();
+    //     //     return time+file.name;
+    //     // },
+    //     parallelUploads: 1,
+    //     acceptedFiles: ".jpeg,.jpg,.png,.gif",
+    //     addRemoveLinks: true,
+    //     autoProcessQueue: false,
+    //     timeout: 50000,
+    //     removedfile: function(file) 
+    //     {
+    //         var name = file.name;
+    //         $.ajax({
+    //             type: 'GET',
+    //             url: '{{ url("mitra/order/delete_files")}}' + '/' + name,
+    //             success: function (data){
+    //                 console.log("File has been successfully removed!!");
+    //             },
+    //             error: function(e) {
+    //                 console.log(e);
+    //             }});
+    //             var fileRef;
+    //             return (fileRef = file.previewElement) != null ? 
+    //             fileRef.parentNode.removeChild(file.previewElement) : void 0;
+    //     },
+    //     success: function(file, response) 
+    //     {
+    //         swal({
+    //             title: 'Success!',
+    //             text: 'Konfirmasi Pembayaran Berhasil!',
+    //             type: 'success',
+    //             showConfirmButton: false
+    //         }).then(
+    //             setTimeout(function () {
+    //                 window.location.replace("{{ url('/mitra/order/')}}")
+    //             }, 2000)
+    //         )
+    //     },
+    //     error: function(file, response)
+    //     {
+    //         return false;
+    //     }
+    // });
 
     $('#btn-submit').on('click',function(){
         var id = document.getElementById('row_id').value;
